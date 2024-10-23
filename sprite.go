@@ -7,6 +7,11 @@ import (
 	"github.com/setanarut/anim"
 )
 
+type ISprite interface {
+	Update()
+	Draw(screen *ebiten.Image)
+}
+
 type Sprite struct {
 	Img          *ebiten.Image
 	X, Y, Dx, Dy float64
