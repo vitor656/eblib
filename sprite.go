@@ -5,11 +5,13 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/setanarut/anim"
+	"github.com/solarlune/resolv"
 )
 
 type ISprite interface {
 	Update()
 	Draw(screen *ebiten.Image)
+	GetCollider() *resolv.Object
 }
 
 type Sprite struct {
@@ -18,6 +20,7 @@ type Sprite struct {
 	Alive        bool
 	Tag          string
 	Animations   *anim.AnimationPlayer
+	Collider     *resolv.Object
 }
 
 func NewSprite(x, y float64) *Sprite {
@@ -35,8 +38,18 @@ func (s *Sprite) Update() {
 		return
 	}
 
-	s.X += s.Dx
-	s.Y += s.Dy
+	if s.Collider != nil {
+		s.checkCollisionSolid()
+		s.X += s.Dx
+		s.Y += s.Dy
+		s.Collider.Position.X = s.X
+		s.Collider.Position.Y = s.Y
+		s.Collider.Update()
+	} else {
+		s.X += s.Dx
+		s.Y += s.Dy
+	}
+
 }
 
 func (s *Sprite) Draw(screen *ebiten.Image) {
@@ -64,4 +77,26 @@ func (s *Sprite) Revive() {
 
 func (s *Sprite) SetupAnimatedSprite(spritesheet *ebiten.Image) {
 	s.Animations = anim.NewAnimationPlayer(spritesheet)
+}
+
+func (s *Sprite) SetCollider(x, y, w, h float64, tags ...string) {
+	s.Collider = resolv.NewObject(x, y, w, h, tags...)
+}
+
+func (s *Sprite) GetCollider() *resolv.Object {
+	return s.Collider
+}
+
+func (s *Sprite) checkCollisionSolid() {
+	if s.Collider == nil {
+		return
+	}
+
+	if collision := s.Collider.Check(s.Dx, 0, "solid"); collision != nil {
+		s.Dx = collision.ContactWithObject(collision.Objects[0]).X
+	}
+
+	if collision := s.Collider.Check(0, s.Dy, "solid"); collision != nil {
+		s.Dy = collision.ContactWithObject(collision.Objects[0]).Y
+	}
 }

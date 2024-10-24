@@ -2,6 +2,7 @@ package eblib
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/solarlune/resolv"
 )
 
 type IState interface {
@@ -10,8 +11,9 @@ type IState interface {
 }
 
 type State struct {
-	Name    string
-	Sprites []ISprite
+	Name           string
+	Sprites        []ISprite
+	CollisionSpace *resolv.Space
 }
 
 func NewState(name string) *State {
@@ -37,4 +39,12 @@ func (s *State) Draw(screen *ebiten.Image) {
 
 func (s *State) Add(sprite ISprite) {
 	s.Sprites = append(s.Sprites, sprite)
+
+	if s.CollisionSpace != nil {
+		s.CollisionSpace.Add(sprite.GetCollider())
+	}
+}
+
+func (s *State) CreateCollisionSpace(w, h, cw, ch int) {
+	s.CollisionSpace = resolv.NewSpace(w, h, cw, ch)
 }
