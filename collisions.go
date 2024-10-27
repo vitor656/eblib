@@ -10,8 +10,16 @@ func CollideWithSolid(s *Sprite) {
 	}
 
 	if collision := s.Collider().Check(0, s.Dy, "solid"); collision != nil {
-		s.Dy = collision.ContactWithObject(collision.Objects[0]).Y
+		other := collision.Objects[0]
+		s.Dy = collision.ContactWithObject(other).Y
+
+		if other.Position.Y > s.Collider().Position.Y {
+			s.IsOnGround = true
+		}
+	} else {
+		s.IsOnGround = false
 	}
+
 }
 
 // Checks is a sprite overlaps another and trigger funcion once

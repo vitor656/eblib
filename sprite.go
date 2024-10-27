@@ -16,12 +16,16 @@ type ISprite interface {
 }
 
 type Sprite struct {
-	Img          *ebiten.Image
-	X, Y, Dx, Dy float64
-	Alive        bool
-	Tag          string
-	Animations   *anim.AnimationPlayer
-	collider     *resolv.Object
+	Img             *ebiten.Image
+	X, Y, Dx, Dy    float64
+	Gravity         float64
+	Alive           bool
+	Tag             string
+	Animations      *anim.AnimationPlayer
+	collider        *resolv.Object
+	ColliderOffsetX float64
+	ColliderOffsetY float64
+	IsOnGround      bool
 }
 
 func NewSprite(x, y float64) *Sprite {
@@ -38,6 +42,8 @@ func (s *Sprite) Update() {
 	if !s.Alive {
 		return
 	}
+
+	s.Dy += s.Gravity
 
 	s.X += s.Dx
 	s.Y += s.Dy
@@ -89,7 +95,7 @@ func (s *Sprite) updateCollider() {
 		return
 	}
 
-	s.collider.Position.X = s.X
-	s.collider.Position.Y = s.Y
+	s.collider.Position.X = s.X + s.ColliderOffsetX
+	s.collider.Position.Y = s.Y + s.ColliderOffsetY
 	s.collider.Update()
 }
