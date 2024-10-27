@@ -41,7 +41,7 @@ func (s *State) Add(sprite ISprite) {
 	s.Sprites = append(s.Sprites, sprite)
 
 	if s.CollisionSpace != nil {
-		s.CollisionSpace.Add(sprite.GetCollider())
+		s.CollisionSpace.Add(sprite.Collider())
 	}
 }
 

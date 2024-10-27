@@ -11,7 +11,8 @@ import (
 type ISprite interface {
 	Update()
 	Draw(screen *ebiten.Image)
-	GetCollider() *resolv.Object
+	Collider() *resolv.Object
+	IsAlive() bool
 }
 
 type Sprite struct {
@@ -20,7 +21,7 @@ type Sprite struct {
 	Alive        bool
 	Tag          string
 	Animations   *anim.AnimationPlayer
-	Collider     *resolv.Object
+	collider     *resolv.Object
 }
 
 func NewSprite(x, y float64) *Sprite {
@@ -38,18 +39,10 @@ func (s *Sprite) Update() {
 		return
 	}
 
-	if s.Collider != nil {
-		s.checkCollisionSolid()
-		s.X += s.Dx
-		s.Y += s.Dy
-		s.Collider.Position.X = s.X
-		s.Collider.Position.Y = s.Y
-		s.Collider.Update()
-	} else {
-		s.X += s.Dx
-		s.Y += s.Dy
-	}
+	s.X += s.Dx
+	s.Y += s.Dy
 
+	s.updateCollider()
 }
 
 func (s *Sprite) Draw(screen *ebiten.Image) {
@@ -75,28 +68,28 @@ func (s *Sprite) Revive() {
 	s.Alive = true
 }
 
+func (s *Sprite) IsAlive() bool {
+	return s.Alive
+}
+
 func (s *Sprite) SetupAnimatedSprite(spritesheet *ebiten.Image) {
 	s.Animations = anim.NewAnimationPlayer(spritesheet)
 }
 
 func (s *Sprite) SetCollider(x, y, w, h float64, tags ...string) {
-	s.Collider = resolv.NewObject(x, y, w, h, tags...)
+	s.collider = resolv.NewObject(x, y, w, h, tags...)
 }
 
-func (s *Sprite) GetCollider() *resolv.Object {
-	return s.Collider
+func (s *Sprite) Collider() *resolv.Object {
+	return s.collider
 }
 
-func (s *Sprite) checkCollisionSolid() {
-	if s.Collider == nil {
+func (s *Sprite) updateCollider() {
+	if s.collider == nil {
 		return
 	}
 
-	if collision := s.Collider.Check(s.Dx, 0, "solid"); collision != nil {
-		s.Dx = collision.ContactWithObject(collision.Objects[0]).X
-	}
-
-	if collision := s.Collider.Check(0, s.Dy, "solid"); collision != nil {
-		s.Dy = collision.ContactWithObject(collision.Objects[0]).Y
-	}
+	s.collider.Position.X = s.X
+	s.collider.Position.Y = s.Y
+	s.collider.Update()
 }
