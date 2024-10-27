@@ -12,6 +12,16 @@ type GameConfig struct {
 	WindowTitle                                                  string
 }
 
+func DefaultGameConfig(title string) *GameConfig {
+	return &GameConfig{
+		WindowWidth:      640,
+		WindowHeight:     480,
+		ResolutionWidth:  160,
+		ResolutionHeight: 120,
+		WindowTitle:      title,
+	}
+}
+
 func NewGame(conf *GameConfig, initialState IState) *Game {
 	ebiten.SetWindowSize(conf.WindowWidth, conf.WindowHeight)
 	ebiten.SetWindowTitle(conf.WindowTitle)
