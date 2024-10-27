@@ -18,7 +18,7 @@ type LDTKLevel struct {
 func NewLDTKLevel(projectPath string, assets fs.FS) *LDTKLevel {
 	level := &LDTKLevel{}
 
-	proj, err := ldtkgo.Open("assets/map.ldtk", assets)
+	proj, err := ldtkgo.Open(projectPath, assets)
 	if err != nil {
 		panic(err)
 	}
