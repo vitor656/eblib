@@ -1,5 +1,7 @@
 package eblib
 
+import "github.com/solarlune/resolv"
+
 func CollideWithSolid(s *Sprite) {
 	if s.Collider() == nil {
 		return
@@ -34,5 +36,13 @@ func OnOverlap(s1 ISprite, s2 ISprite, overlapAction func(s1 ISprite, s2 ISprite
 
 	if s1.Collider().Overlaps(s2.Collider()) {
 		overlapAction(s1, s2)
+	}
+}
+
+func PlaceLevelColliders(level *LDTKLevel, layer string, intValue int, space *resolv.Space, w float64, h float64) {
+	positions := level.GetIntGridLayerCollisionPoints(layer, intValue)
+	for _, p := range positions {
+		c := resolv.NewObject(float64(p.X), float64(p.Y), w, h, "solid")
+		space.Add(c)
 	}
 }
