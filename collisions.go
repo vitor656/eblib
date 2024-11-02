@@ -2,6 +2,20 @@ package eblib
 
 import "github.com/solarlune/resolv"
 
+type CollisionManager struct {
+	Space *resolv.Space
+}
+
+func NewCollisionManager(w, h, cw, ch int) *CollisionManager {
+	return &CollisionManager{
+		Space: resolv.NewSpace(w, h, cw, ch),
+	}
+}
+
+func (m *CollisionManager) Add(c Collidable) {
+	m.Space.Add(c.Collider())
+}
+
 func CollideWithSolid(s *Sprite) {
 	if s.Collider() == nil {
 		return
@@ -25,7 +39,7 @@ func CollideWithSolid(s *Sprite) {
 }
 
 // Checks is a sprite overlaps another and trigger funcion once
-func OnOverlap(s1 ISprite, s2 ISprite, overlapAction func(s1 ISprite, s2 ISprite)) {
+func OnOverlap(s1 LivableCollidable, s2 LivableCollidable, overlapAction func(s1 any, s2 any)) {
 	if s1.Collider() == nil || s2.Collider() == nil {
 		return
 	}

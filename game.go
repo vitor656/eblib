@@ -3,8 +3,8 @@ package eblib
 import "github.com/hajimehoshi/ebiten/v2"
 
 type Game struct {
-	State      IState
-	GameConfig *GameConfig
+	state      Stater
+	gameConfig *GameConfig
 }
 
 type GameConfig struct {
@@ -22,33 +22,35 @@ func DefaultGameConfig(title string) *GameConfig {
 	}
 }
 
-func NewGame(conf *GameConfig, initialState IState) *Game {
+func NewGame(conf *GameConfig, initialState Stater) *Game {
 	ebiten.SetWindowSize(conf.WindowWidth, conf.WindowHeight)
 	ebiten.SetWindowTitle(conf.WindowTitle)
 
 	g := &Game{
-		GameConfig: conf,
+		gameConfig: conf,
 	}
-	g.State = initialState
+	g.state = initialState
 
-	GameInstance = g
+	GG.Game = g
+	GG.CurrentState = initialState
+
 	return g
 }
 
 func (g *Game) Update() error {
-	return g.State.Update()
+	return g.state.Update()
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.State.Draw(screen)
+	g.state.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return g.GameConfig.ResolutionWidth, g.GameConfig.ResolutionHeight
+	return g.gameConfig.ResolutionWidth, g.gameConfig.ResolutionHeight
 }
 
-func (g *Game) SwitchState(state IState) {
-	g.State = state
+func (g *Game) SwitchState(state Stater) {
+	g.state = state
 }
 
 func (g *Game) Run() {

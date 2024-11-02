@@ -8,13 +8,6 @@ import (
 	"github.com/solarlune/resolv"
 )
 
-type ISprite interface {
-	Update()
-	Draw(screen *ebiten.Image)
-	Collider() *resolv.Object
-	IsAlive() bool
-}
-
 type Sprite struct {
 	Img             *ebiten.Image
 	X, Y, Dx, Dy    float64
@@ -38,9 +31,9 @@ func NewSprite(x, y float64) *Sprite {
 	return s
 }
 
-func (s *Sprite) Update() {
+func (s *Sprite) Update() error {
 	if !s.Alive {
-		return
+		return nil
 	}
 
 	s.Dy += s.Gravity
@@ -49,6 +42,8 @@ func (s *Sprite) Update() {
 	s.Y += s.Dy
 
 	s.updateCollider()
+
+	return nil
 }
 
 func (s *Sprite) Draw(screen *ebiten.Image) {

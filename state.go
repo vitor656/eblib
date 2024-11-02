@@ -2,24 +2,18 @@ package eblib
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/solarlune/resolv"
 )
 
-type IState interface {
-	Update() error
-	Draw(screen *ebiten.Image)
-}
-
 type State struct {
-	Name           string
-	Sprites        []ISprite
-	CollisionSpace *resolv.Space
+	Name       string
+	Sprites    []UpdatableDrawable
+	colManager *CollisionManager
 }
 
 func NewState(name string) *State {
 	s := &State{}
 	s.Name = name
-	s.Sprites = make([]ISprite, 0)
+	s.Sprites = make([]UpdatableDrawable, 0)
 
 	return s
 }
@@ -37,14 +31,18 @@ func (s *State) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (s *State) Add(sprite ISprite) {
+func (s *State) Add(sprite UpdatableDrawable) {
 	s.Sprites = append(s.Sprites, sprite)
 
-	if s.CollisionSpace != nil {
-		s.CollisionSpace.Add(sprite.Collider())
+	if collidable, ok := sprite.(Collidable); ok && s.colManager != nil {
+		s.colManager.Add(collidable)
 	}
 }
 
 func (s *State) CreateCollisionSpace(w, h, cw, ch int) {
-	s.CollisionSpace = resolv.NewSpace(w, h, cw, ch)
+	s.colManager = NewCollisionManager(w, h, cw, ch)
+}
+
+func (s *State) CollisionManager() *CollisionManager {
+	return s.colManager
 }

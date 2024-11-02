@@ -56,7 +56,7 @@ func (s *DefaultState) Update() error {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.Key2) {
-		eblib.SwitchState(NewSecondState())
+		eblib.GG.SwitchState(NewSecondState())
 	}
 
 	return s.State.Update()
@@ -81,7 +81,7 @@ func NewSecondState() *SecondState {
 
 func (s *SecondState) Update() error {
 	if ebiten.IsKeyPressed(ebiten.Key1) {
-		eblib.SwitchState(NewDefaultState())
+		eblib.GG.SwitchState(NewDefaultState())
 	}
 
 	return s.State.Update()

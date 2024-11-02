@@ -1,7 +1,16 @@
 package eblib
 
-var GameInstance *Game
+var GG = &GameGlobals{}
 
-func SwitchState(newState IState) {
-	GameInstance.SwitchState(newState)
+type GameGlobals struct {
+	Game         *Game
+	CurrentState Stater
+}
+
+func (gg *GameGlobals) SwitchState(newState Stater) {
+	gg.Game.SwitchState(newState)
+}
+
+func (gg *GameGlobals) GameConfig() *GameConfig {
+	return gg.Game.gameConfig
 }
