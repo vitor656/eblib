@@ -32,7 +32,6 @@ func NewGame(conf *GameConfig, initialState Stater) *Game {
 	g.state = initialState
 
 	GG.Game = g
-	GG.CurrentState = initialState
 
 	return g
 }

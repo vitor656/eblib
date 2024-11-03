@@ -1,19 +1,21 @@
 package eblib
 
 import (
+	"fmt"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type State struct {
 	Name       string
-	Sprites    []UpdatableDrawable
+	Sprites    []UpdatableDrawableIDable
 	colManager *CollisionManager
 }
 
 func NewState(name string) *State {
 	s := &State{}
 	s.Name = name
-	s.Sprites = make([]UpdatableDrawable, 0)
+	s.Sprites = make([]UpdatableDrawableIDable, 0)
 
 	return s
 }
@@ -22,6 +24,9 @@ func (s *State) Update() error {
 	for _, sprite := range s.Sprites {
 		sprite.Update()
 	}
+
+	d := len(s.Sprites)
+	fmt.Printf("Updating %d sprites\n", d)
 	return nil
 }
 
@@ -31,11 +36,28 @@ func (s *State) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (s *State) Add(sprite UpdatableDrawable) {
+func (s *State) Add(sprite UpdatableDrawableIDable) {
 	s.Sprites = append(s.Sprites, sprite)
 
 	if collidable, ok := sprite.(Collidable); ok && s.colManager != nil {
 		s.colManager.Add(collidable)
+	}
+
+	if teste, ok := sprite.(interface{ SetState(Stater) }); ok {
+		teste.SetState(s)
+	}
+}
+
+func (s *State) Remove(sprite UpdatableDrawableIDable) {
+	var index int = -1
+	for i, v := range s.Sprites {
+		if v.ID() == sprite.ID() {
+			index = i
+		}
+	}
+
+	if index > -1 {
+		s.Sprites = append(s.Sprites[:index], s.Sprites[index+1:]...)
 	}
 }
 
