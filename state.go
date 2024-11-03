@@ -1,8 +1,6 @@
 package eblib
 
 import (
-	"fmt"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -25,8 +23,6 @@ func (s *State) Update() error {
 		sprite.Update()
 	}
 
-	d := len(s.Sprites)
-	fmt.Printf("Updating %d sprites\n", d)
 	return nil
 }
 
