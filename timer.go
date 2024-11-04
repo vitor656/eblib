@@ -21,7 +21,15 @@ func NewTimer(count int, repeat bool, onTrigger func()) *Timer {
 
 func (t *Timer) Start() {
 	t.started = true
+}
 
+func (t *Timer) Stop() {
+	t.started = false
+}
+
+func (t *Timer) StopFunc(onStop func()) {
+	t.started = false
+	onStop()
 }
 
 func (t *Timer) Update() error {

@@ -16,13 +16,15 @@ type Text struct {
 	Size        float64
 	textSource  *text.GoTextFaceSource
 	DrawOptions *text.DrawOptions
+	Visible     bool
 }
 
 func NewText(content string) *Text {
 	t := &Text{
-		Text:  content,
-		Size:  8,
-		Color: color.White,
+		Text:    content,
+		Size:    8,
+		Color:   color.White,
+		Visible: true,
 	}
 
 	// use default lib font
@@ -35,6 +37,10 @@ func NewText(content string) *Text {
 }
 
 func (t *Text) Draw(screen *ebiten.Image) {
+	if !t.Visible {
+		return
+	}
+
 	t.DrawOptions.GeoM.Reset()
 	t.DrawOptions.ColorScale.Reset()
 	t.DrawOptions.GeoM.Translate(t.X, t.Y)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/setanarut/anim"
 	"github.com/solarlune/resolv"
 )
@@ -15,6 +16,7 @@ type Sprite struct {
 	X, Y, Dx, Dy    float64
 	Gravity         float64
 	Alive           bool
+	Visible         bool
 	Tag             string
 	Animations      *anim.AnimationPlayer
 	collider        *resolv.Object
@@ -26,10 +28,11 @@ type Sprite struct {
 
 func NewSprite(x, y float64) *Sprite {
 	s := &Sprite{
-		X:     x,
-		Y:     y,
-		Alive: true,
-		id:    uuid.New(),
+		X:       x,
+		Y:       y,
+		Alive:   true,
+		id:      uuid.New(),
+		Visible: true,
 	}
 
 	return s
@@ -63,14 +66,28 @@ func (s *Sprite) Draw(screen *ebiten.Image) {
 		return
 	}
 
+	if !s.Visible {
+		return
+	}
+
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(s.X, s.Y)
+
 	screen.DrawImage(s.Img, op)
 }
 
 func (s *Sprite) MakeSquareImg(w, h int, c color.Color) {
 	s.Img = ebiten.NewImage(w, h)
 	s.Img.Fill(c)
+}
+
+func (s *Sprite) LoadImage(path string) {
+	img, _, err := ebitenutil.NewImageFromFile(path)
+	if err != nil {
+		panic(err)
+	}
+
+	s.Img = img
 }
 
 func (s *Sprite) Kill() {
@@ -97,6 +114,11 @@ func (s *Sprite) SetupAnimatedSprite(spritesheet *ebiten.Image) {
 
 func (s *Sprite) SetCollider(x, y, w, h float64, tags ...string) {
 	s.collider = resolv.NewObject(x, y, w, h, tags...)
+}
+
+func (s *Sprite) SetColliderBasedOnImg(tags ...string) {
+	bound := s.Img.Bounds()
+	s.collider = resolv.NewObject(s.X, s.Y, float64(bound.Dx()), float64(bound.Dy()), tags...)
 }
 
 func (s *Sprite) SetColliderData(data interface{}) {
