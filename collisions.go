@@ -60,3 +60,21 @@ func PlaceLevelColliders(level *LDTKLevel, layer string, intValue int, space *re
 		space.Add(c)
 	}
 }
+
+func KeepInScreenBounds(s *Sprite) {
+	if s.Dx < 0 && s.X < 0 {
+		s.Dx = 0
+	}
+
+	if s.Dx > 0 && s.X > float64(GG.ScreenWidth()-s.Img.Bounds().Dx()) {
+		s.Dx = 0
+	}
+
+	if s.Dy < 0 && s.Y < 0 {
+		s.Dy = 0
+	}
+
+	if s.Dy > 0 && s.Y > float64(GG.ScreenHeight()-s.Img.Bounds().Dy()) {
+		s.Dy = 0
+	}
+}

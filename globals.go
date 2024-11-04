@@ -25,3 +25,11 @@ func (gg *GameGlobals) CurrentState() Stater {
 func (gg *GameGlobals) ScreenSize() (int, int) {
 	return gg.Game.gameConfig.ResolutionWidth, gg.Game.gameConfig.ResolutionHeight
 }
+
+func (gg *GameGlobals) ScreenWidth() int {
+	return gg.Game.gameConfig.ResolutionWidth
+}
+
+func (gg *GameGlobals) ScreenHeight() int {
+	return gg.Game.gameConfig.ResolutionHeight
+}
